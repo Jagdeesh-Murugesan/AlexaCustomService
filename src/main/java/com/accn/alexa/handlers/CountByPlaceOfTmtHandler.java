@@ -30,10 +30,8 @@ public class CountByPlaceOfTmtHandler extends SplunkIntentHandler implements IRe
     	ResponseBuilder builder = new ResponseBuilder();
 		String speechText = "";
 		HashMap<String, String> result = new HashMap<String, String>();
-		System.out.println("Entering CountByPlaceOfTreatment Intent");
 		Service service = getService();
 
-		System.out.println("Connected");
 		JobCollection jobs = service.getJobs();
 		Args queryArgs = new Args();
 		queryArgs.put("exec_mode", "blocking");
@@ -50,7 +48,6 @@ public class CountByPlaceOfTmtHandler extends SplunkIntentHandler implements IRe
 			HashMap<String, String> event;
 
 			while ((event = resultsReaderNormalSearch.getNextEvent()) != null) {
-				System.out.println(event.get("Claims") + " --  " + event.get("PlaceOfTreatment"));
 				result.put(event.get("PlaceOfTreatment"), event.get("Claims"));
 			}
 		} catch (Exception e) {
@@ -59,7 +56,6 @@ public class CountByPlaceOfTmtHandler extends SplunkIntentHandler implements IRe
 		speechText = "There are " + result.get("1") + " claims having Place of Treatment value as 1, " + result.get("2")
 				+ " claims have Place of Treatment value as 2 <break time='0.2s'/> and " + result.get("3")
 				+ " claims have Place of Treatment value as 3";
-		System.out.println(speechText);
 		
 		return builder.withSpeech(speechText).build();
 	}

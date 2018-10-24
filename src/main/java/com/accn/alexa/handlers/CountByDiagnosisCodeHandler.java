@@ -29,12 +29,10 @@ public class CountByDiagnosisCodeHandler extends SplunkIntentHandler implements 
 	public Optional<Response> handle(RequestEnvelope input) {
     	
     	ResponseBuilder builder = new ResponseBuilder();
-		System.out.println("Entering CountByDiagnosisCode Intent");
 		Service service = getService();
 		HashMap<String, String> result = new HashMap<String, String>();
 		List<String> diagnosisCds = new ArrayList<String>();
 		
-		System.out.println("Connected");
 		JobCollection jobs = service.getJobs();
 		Args queryArgs = new Args();
 		queryArgs.put("exec_mode", "blocking");
@@ -49,7 +47,6 @@ public class CountByDiagnosisCodeHandler extends SplunkIntentHandler implements 
 			resultsReaderNormalSearch = new ResultsReaderXml(resultsNormalSearch);
 
 			while ((event = resultsReaderNormalSearch.getNextEvent()) != null) {
-				System.out.println(event.get("Claims") + " --  " + event.get("DiagnosisCode"));
 				result.put(event.get("DiagnosisCode"), event.get("Claims"));
 				diagnosisCds.add(event.get("DiagnosisCode"));
 			}
@@ -57,7 +54,6 @@ public class CountByDiagnosisCodeHandler extends SplunkIntentHandler implements 
 			System.out.println(e.getMessage());
 		}
 		String speechText = "There are " + result.get(diagnosisCds.get(0)) + " claims having Diagnosis Code <break time='0.2s'/> " + diagnosisCds.get(0);
-		System.out.println(speechText);
 		
 		return builder.withSpeech(speechText).build();
 	}

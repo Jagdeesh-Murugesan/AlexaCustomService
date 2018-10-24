@@ -23,6 +23,8 @@ public class AlexaController {
 	
 	@PostMapping("/skill")
 	public @ResponseBody ResponseEnvelope process(@RequestBody RequestEnvelope requestEnvlop) {
+		
+		logger.info("Envelop "+requestEnvlop.toString());
 
 		Optional<Response> response = null;
 

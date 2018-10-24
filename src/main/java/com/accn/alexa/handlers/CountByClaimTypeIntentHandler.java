@@ -29,10 +29,8 @@ public class CountByClaimTypeIntentHandler extends SplunkIntentHandler implement
 	public Optional<Response> handle(RequestEnvelope input) {
     	
     	ResponseBuilder builder = new ResponseBuilder();
-		System.out.println("Entering CountByClaimType Intent");
 		Service service = getService();
 		HashMap<String, String> result = new HashMap<String, String>();
-		System.out.println("Connected");
 		JobCollection jobs = service.getJobs();
 		Args queryArgs = new Args();
 		queryArgs.put("exec_mode", "blocking");
@@ -49,7 +47,6 @@ public class CountByClaimTypeIntentHandler extends SplunkIntentHandler implement
 				HashMap<String, String> event;
 
 				while ((event = resultsReaderNormalSearch.getNextEvent()) != null) {
-					System.out.println(event.get("Claims") + " --  " + event.get("ClaimType"));
 					result.put(event.get("ClaimType"), event.get("Claims"));
 				}
 			} catch (Exception e) {

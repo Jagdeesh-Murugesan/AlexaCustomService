@@ -10,6 +10,7 @@ import com.amazon.ask.model.IntentRequest;
 import com.amazon.ask.model.RequestEnvelope;
 import com.amazon.ask.model.Response;
 import com.amazon.ask.response.ResponseBuilder;
+import com.splunk.Args;
 import com.splunk.Job;
 import com.splunk.JobCollection;
 import com.splunk.ResultsReaderXml;
@@ -36,14 +37,14 @@ public class CountByCorporateEntityCodeIntentHandler extends SplunkIntentHandler
 		domainMap.put("TX1", "Texas");
 		domainMap.put("OK1", "Oklahoma");
 		domainMap.put("MT1", "Montana");
-		System.out.println("Entering CountByCorporateEntityCode Intent");
 		Service service = getService();
+		Args queryArgs = new Args();
+		queryArgs.put("exec_mode", "blocking");
 		
-		System.out.println("Connected");
 		JobCollection jobs = service.getJobs();
 		Job job = jobs.create(
-				"search index=\"alexa*\" sourcetype=\"alexa*\" Status=\"*\" | rex \"DCN (?<DCN>.*)-SL\"|stats count as Claims by CorporateEntityCode");
-		 waitingTime(job);
+				"search index=\"alexa*\" sourcetype=\"alexa*\" Status=\"*\" | rex \"DCN (?<DCN>.*)-SL\"|stats count as Claims by CorporateEntityCode",
+				queryArgs);
 		if (job.isDone()) {
 			InputStream resultsNormalSearch = job.getResults();
 
@@ -54,10 +55,8 @@ public class CountByCorporateEntityCodeIntentHandler extends SplunkIntentHandler
 				HashMap<String, String> event;
 
 				while ((event = resultsReaderNormalSearch.getNextEvent()) != null) {
-					System.out.println(event.get("Claims") + " --  " + event.get("CorporateEntityCode"));
 					resString = resString +event.get("Claims")+" claims processed under "+domainMap.get(event.get("CorporateEntityCode"))+". ";
 				}
-				System.out.println(resString);
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}

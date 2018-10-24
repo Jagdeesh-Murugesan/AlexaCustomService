@@ -22,7 +22,6 @@ public class LaunchRequestHandler implements IRequestHandler {
         String speechText = "Welcome to Splunk tracker, you can get metrics from the splunk app using this skill. Now what can i do for you.";
         
         return builder.withSpeech(speechText)
-                .withReprompt(speechText)
                 .build();
     }
 

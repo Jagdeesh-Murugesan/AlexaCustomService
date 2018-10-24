@@ -32,10 +32,8 @@ public class RejectedRatioIntentHandler extends SplunkIntentHandler implements I
 		String rejectedClaimPercent = null;
 		String totalClaims = null;
 		String rejectedCount = null;
-		System.out.println("Entering RejectedRatio Intent");
 		Service service = getService();
 
-		System.out.println("Connected");
 		JobCollection jobs = service.getJobs();
 		Args queryArgs = new Args();
 		queryArgs.put("exec_mode", "blocking");
@@ -54,7 +52,6 @@ public class RejectedRatioIntentHandler extends SplunkIntentHandler implements I
 			HashMap<String, String> event;
 
 			while ((event = resultsReaderNormalSearch.getNextEvent()) != null) {
-				System.out.println(event.get("RejectedRatio") + " --  " + event.get("rejectedcount"));
 				rejectedClaimPercent = event.get("RejectedRatio") !=null ? event.get("RejectedRatio") : "zero";
 				rejectedCount = event.get("rejectedcount") !=null ? event.get("rejectedcount") : "zero";
 				totalClaims = event.get("totalClaims") !=null ? event.get("totalClaims") : "zero";
@@ -63,7 +60,6 @@ public class RejectedRatioIntentHandler extends SplunkIntentHandler implements I
 			System.out.println(e.getMessage());
 		}
 		speechText = rejectedCount + " out of "+  totalClaims +" claims are rejected, rejected claims percentage is " + rejectedClaimPercent;
-		System.out.println(speechText);
 		
 		return builder.withSpeech(speechText).build();
 	}

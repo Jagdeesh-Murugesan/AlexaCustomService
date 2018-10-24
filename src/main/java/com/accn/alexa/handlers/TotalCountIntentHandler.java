@@ -29,10 +29,8 @@ public class TotalCountIntentHandler extends SplunkIntentHandler implements IReq
     	
     	ResponseBuilder builder = new ResponseBuilder();
 		int total_count = 0;
-		System.out.println("Entering TotalClaimCount Intent");
 		Service service = getService();
 
-		System.out.println("Connected");
 		JobCollection jobs = service.getJobs();
 		Args queryArgs = new Args();
 		queryArgs.put("exec_mode", "blocking");
@@ -49,10 +47,8 @@ public class TotalCountIntentHandler extends SplunkIntentHandler implements IReq
 				HashMap<String, String> event;
 
 				while ((event = resultsReaderNormalSearch.getNextEvent()) != null) {
-					System.out.println(event.get("Total Number Of Claims"));
 					total_count = total_count + Integer.parseInt(event.get("Total Number Of Claims"));
 				}
-				System.out.println("Total no of claims processed is " + total_count);
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}

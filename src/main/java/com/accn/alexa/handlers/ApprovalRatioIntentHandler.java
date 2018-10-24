@@ -9,6 +9,7 @@ import com.amazon.ask.model.IntentRequest;
 import com.amazon.ask.model.RequestEnvelope;
 import com.amazon.ask.model.Response;
 import com.amazon.ask.response.ResponseBuilder;
+import com.splunk.Args;
 import com.splunk.Job;
 import com.splunk.JobCollection;
 import com.splunk.ResultsReaderXml;
@@ -31,14 +32,15 @@ public class ApprovalRatioIntentHandler extends SplunkIntentHandler implements I
 		String approvedClaimPercent = null;
 		String totalClaims = null;
 		String approvedCount = null;
-		System.out.println("Entering ApprovalRatio Intent");
 		Service service = getService();
+		
+		Args queryArgs = new Args();
+		queryArgs.put("exec_mode", "blocking");
 
-		System.out.println("Connected");
 		JobCollection jobs = service.getJobs();
 		Job job = jobs.create(
-				"search index=\"alexa*\" sourcetype=\"alexa*\" Status=\"*\" | rex \"DCN (?<DCN>.*)-SL\"|eval approved=if(Status=\"approved\",1,0) | eventstats sum(approved) as approvedcount count as totalClaims |eval approvedpercent=round(((approvedcount/totalClaims)*100),2) |stats values(approvedpercent) as ApprovalRatio by approvedcount,totalClaims");
-		waitingTime(job);
+				"search index=\"alexa*\" sourcetype=\"alexa*\" Status=\"*\" | rex \"DCN (?<DCN>.*)-SL\"|eval approved=if(Status=\"approved\",1,0) | eventstats sum(approved) as approvedcount count as totalClaims |eval approvedpercent=round(((approvedcount/totalClaims)*100),2) |stats values(approvedpercent) as ApprovalRatio by approvedcount,totalClaims",
+				queryArgs);
 		if (job.isDone()) {
 			InputStream resultsNormalSearch = job.getResults();
 
@@ -49,13 +51,10 @@ public class ApprovalRatioIntentHandler extends SplunkIntentHandler implements I
 				HashMap<String, String> event;
 
 				while ((event = resultsReaderNormalSearch.getNextEvent()) != null) {
-					System.out.println(event.get("ApprovalRatio"));
 					approvedClaimPercent = event.get("ApprovalRatio") != null ? event.get("ApprovalRatio") : "zero";
 					approvedCount = event.get("approvedcount") != null ? event.get("approvedcount") : "zero";
 					totalClaims = event.get("totalClaims") != null ? event.get("totalClaims") : "zero";
 				}
-				System.out.println("Approved Claims Percentage " + approvedClaimPercent + " approvedCount "
-						+ approvedCount + " totalClaims " + totalClaims);
 			} catch (Exception e) {
 				System.out.println(e.getMessage());
 			}

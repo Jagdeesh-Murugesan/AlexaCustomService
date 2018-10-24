@@ -23,7 +23,7 @@ public class CancelandStopIntentHandler implements IRequestHandler {
 		ResponseBuilder builder = new ResponseBuilder();
 		String speechText = "Goodbye";
         return builder
-                .withSpeech(speechText)
+                .withSpeech(speechText).withShouldEndSession(Boolean.TRUE)
                 .build();
 	}
 }
